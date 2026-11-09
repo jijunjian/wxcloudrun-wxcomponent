@@ -19,7 +19,7 @@ func updateCloudBaseAccessToken() {
 		log.Errorf(err.Error())
 	}
 	cloudBaseAccessToken = string(content)
-	log.Info("new cloudbase accesstoken: " + cloudBaseAccessToken)
+	log.Infof("cloudbase token refreshed ready=%t", cloudBaseAccessToken != "" && cloudBaseAccessToken != defaultAccessToken)
 }
 
 func init() {

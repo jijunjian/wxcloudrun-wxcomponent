@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/errno"
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/httputils"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/log"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/wx"
 	wxbase "github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/wx/base"
@@ -24,6 +25,7 @@ func getPreAuthCodeHandler(c *gin.Context) {
 	}
 	_, body, err := wx.PostWxJsonWithComponentToken("/cgi-bin/component/api_create_preauthcode", "", req)
 	if err != nil {
+		log.Errorf("create preauthcode failed appid=%s error=%s", req.ComponentAppid, httputils.SafeDiagnostic(err.Error()))
 		c.JSON(http.StatusOK, errno.ErrSystemError.WithData(err.Error()))
 		return
 	}

@@ -78,7 +78,7 @@ func GetWxCallBackRuleWithCache(infoType string, msgType string, event string) (
 	key := genCallBackRuleKey(infoType, msgType, event)
 	value, found := cacheCli.Get(key)
 	if found {
-		log.Infof("hit cache key:", key)
+		log.Infof("hit cache key: %s", key)
 		if value == nil {
 			return nil, nil
 		}
