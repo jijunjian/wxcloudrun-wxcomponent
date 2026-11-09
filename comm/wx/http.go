@@ -38,10 +38,12 @@ func GetComponentWxApiUrl(path string, query string) (string, error) {
 	url := fmt.Sprintf("%s://api.weixin.qq.com%s", protocol, path)
 
 	if config.WxApiConf.UseCloudBaseAccessToken {
+		log.Infof("wechat API path=%s auth_mode=cloudbase token_ready=%t https=%t", path, cloudbasetoken.GetCloudBaseAccessToken() != "" && cloudbasetoken.GetCloudBaseAccessToken() != "default-tcb-wx-access-token", config.WxApiConf.UseHttps)
 		return fmt.Sprintf("%s?cloudbase_access_token=%s%s",
 			url, cloudbasetoken.GetCloudBaseAccessToken(), query), nil
 	}
 	if config.WxApiConf.UseComponentAccessToken {
+		log.Infof("wechat API path=%s auth_mode=component https=%t", path, config.WxApiConf.UseHttps)
 		token, err := GetComponentAccessToken()
 		if err != nil {
 			log.Error(err)
@@ -50,6 +52,7 @@ func GetComponentWxApiUrl(path string, query string) (string, error) {
 		return fmt.Sprintf("%s?component_access_token=%s%s",
 			url, token, query), nil
 	}
+	log.Errorf("wechat API path=%s auth_mode=none https=%t; check wxapi configuration", path, config.WxApiConf.UseHttps)
 	return fmt.Sprintf("%s?%s", url, query), nil
 }
 
@@ -89,6 +92,7 @@ func postWxJson(url string, data interface{}) (*WxCommError, []byte, error) {
 		return &wxError, body, err
 	}
 	if wxError.ErrCode != 0 {
+		log.Errorf("wechat API rejected request errcode=%d errmsg=%s", wxError.ErrCode, httputils.SafeDiagnostic(wxError.ErrMsg))
 		return &wxError, body, fmt.Errorf("WxErrCode != 0, resp: %v", wxError)
 	}
 	return &wxError, body, nil
@@ -107,6 +111,7 @@ func postWxFormData(url string, formFile multipart.File,
 		return &wxError, body, err
 	}
 	if wxError.ErrCode != 0 {
+		log.Errorf("wechat API rejected request errcode=%d errmsg=%s", wxError.ErrCode, httputils.SafeDiagnostic(wxError.ErrMsg))
 		return &wxError, body, fmt.Errorf("WxErrCode != 0, resp: %v", wxError)
 	}
 	return &wxError, body, nil
@@ -125,6 +130,7 @@ func getWxApi(url string) (*WxCommError, []byte, error) {
 		return &wxError, body, err
 	}
 	if wxError.ErrCode != 0 {
+		log.Errorf("wechat API rejected request errcode=%d errmsg=%s", wxError.ErrCode, httputils.SafeDiagnostic(wxError.ErrMsg))
 		return &wxError, body, fmt.Errorf("WxErrCode != 0, resp: %v", wxError)
 	}
 	return &wxError, body, nil
