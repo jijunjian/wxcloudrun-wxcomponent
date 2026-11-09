@@ -22,7 +22,7 @@ func main() {
 	g.Go(func() error {
 		r := routers.InnerServiceInit()
 		if err := r.Run("127.0.0.1:8081"); err != nil {
-			log.Error("startup inner service failed, err:%v", err)
+			log.Errorf("startup inner service failed, err:%v", err)
 			return err
 		}
 		return nil
@@ -32,7 +32,7 @@ func main() {
 	g.Go(func() error {
 		r := routers.Init()
 		if err := r.Run(":80"); err != nil {
-			log.Error("startup service failed, err:%v", err)
+			log.Errorf("startup service failed, err:%v", err)
 			return err
 		}
 		return nil
